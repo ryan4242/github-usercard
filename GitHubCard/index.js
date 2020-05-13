@@ -47,7 +47,6 @@ followersArray.forEach(user => {
   .then(response => {
     return response.data
   }).then(data => {
-    console.log(data);
     cards.after(cardMaker(data));
   });
 });
