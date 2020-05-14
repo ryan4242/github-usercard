@@ -22,10 +22,10 @@ const cards = document.querySelector('.cards');
 
 axios.get('https://api.github.com/users/ryan4242')
 .then(response => {
+  console.log(response.data);
   cards.appendChild(cardMaker(response.data));
 })
   
-
 
 /*
   STEP 5: Now that you have your own card getting added to the DOM, either
@@ -38,14 +38,22 @@ axios.get('https://api.github.com/users/ryan4242')
     user, and adding that card to the DOM.
 */
 
-const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell'];
+const followersArray = [];
 
-followersArray.forEach(user => {
-  axios.get(`https://api.github.com/users/${user}`)
-  .then(response => {
-    cards.after(cardMaker(response.data));
+axios.get(`https://api.github.com/users/tetondan`)
+.then(response => {
+  cards.after(cardMaker(response.data));
+  axios.get(response.data.followers_url)
+  .then(url => {
+    url.data.forEach(user => {
+      axios.get(`https://api.github.com/users/${user.login}`)
+      .then(response => {
+        cards.after(cardMaker(response.data));
+      });
+    });
   });
 });
+
 
 /*
   STEP 3: Create a function that accepts a single object as its only argument.
