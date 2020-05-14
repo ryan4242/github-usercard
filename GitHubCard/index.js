@@ -3,16 +3,6 @@
     (replacing the placeholder with your Github name):
     https://api.github.com/users/<your name>
 */
-const cards = document.querySelector('.cards');
-
-axios.get('https://api.github.com/users/ryan4242')
-.then(response => {
-  return response.data;
-})
-.then(data => {
-  cards.appendChild(cardMaker(data));
-})
-
 
 /*
   STEP 2: Inspect and study the data coming back, this is YOUR
@@ -23,11 +13,19 @@ axios.get('https://api.github.com/users/ryan4242')
 */
 
 
-
 /*
   STEP 4: Pass the data received from Github into your function,
     and append the returned markup to the DOM as a child of .cards
 */
+
+const cards = document.querySelector('.cards');
+
+axios.get('https://api.github.com/users/ryan4242')
+.then(response => {
+  cards.appendChild(cardMaker(response.data));
+})
+  
+
 
 /*
   STEP 5: Now that you have your own card getting added to the DOM, either
@@ -45,9 +43,7 @@ const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigkne
 followersArray.forEach(user => {
   axios.get(`https://api.github.com/users/${user}`)
   .then(response => {
-    return response.data
-  }).then(data => {
-    cards.after(cardMaker(data));
+    cards.after(cardMaker(response.data));
   });
 });
 
@@ -84,17 +80,6 @@ const cardMaker = obj => {
   const following = document.createElement('p');
   const bio = document.createElement('p');
 
-  card.appendChild(image);
-  card.appendChild(cardInfo);
-  cardInfo.appendChild(name);
-  cardInfo.appendChild(userName);
-  cardInfo.appendChild(location);
-  cardInfo.appendChild(profile);
-  profile.after(link);
-  cardInfo.appendChild(followers);
-  cardInfo.appendChild(following);
-  cardInfo.appendChild(bio);
-
   card.classList.add('card');
   cardInfo.classList.add('card-info');
   name.classList.add('name');
@@ -106,14 +91,21 @@ const cardMaker = obj => {
   location.innerHTML = `Location: ${obj.location}`;
   link.href = obj.html_url;
   link.textContent = obj.html_url;
-  profile.textContent = 'Profile: ';
+  profile.textContent = `Profile: `;
   followers.innerHTML = `Followers: ${obj.followers}`;
   following.innerHTML = `Following: ${obj.following}`;
   bio.innerHTML = `Bio: ${obj.bio}`;
 
-  link.style.fontSize = '1.4em';
-  profile.style.display = 'inline-block';
-  profile.style.paddingRight = '4px';
+  card.appendChild(image);
+  card.appendChild(cardInfo);
+  cardInfo.appendChild(name);
+  cardInfo.appendChild(userName);
+  cardInfo.appendChild(location);
+  cardInfo.appendChild(profile);
+  profile.appendChild(link);
+  cardInfo.appendChild(followers);
+  cardInfo.appendChild(following);
+  cardInfo.appendChild(bio);
 
   return card;
 }
