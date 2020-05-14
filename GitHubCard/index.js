@@ -24,6 +24,11 @@ axios.get('https://api.github.com/users/ryan4242') //api call
 .then(response => {                                //async response 
   cards.appendChild(cardMaker(response.data));     //append card
 })
+.catch(() => {
+  const errorMessage = document.createElement('p');
+  errorMessage.textContent = 'Uh-oh! We hit a snag!';
+  cards.append(errorMessage);
+});
   
 
 /*
@@ -51,6 +56,11 @@ axios.get(`https://api.github.com/users/tetondan`) //I have no followers so I us
       });
     });
   });
+})
+.catch(() => {
+  const errorMessage = document.createElement('p');
+  errorMessage.textContent = 'Uh-oh! We hit a snag!';
+  cards.append(errorMessage);
 });
 
 
