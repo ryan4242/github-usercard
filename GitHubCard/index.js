@@ -20,10 +20,9 @@
 
 const cards = document.querySelector('.cards');
 
-axios.get('https://api.github.com/users/ryan4242')
-.then(response => {
-  console.log(response.data);
-  cards.appendChild(cardMaker(response.data));
+axios.get('https://api.github.com/users/ryan4242') //api call
+.then(response => {                                //async response 
+  cards.appendChild(cardMaker(response.data));     //append card
 })
   
 
@@ -40,15 +39,15 @@ axios.get('https://api.github.com/users/ryan4242')
 
 const followersArray = [];
 
-axios.get(`https://api.github.com/users/tetondan`)
+axios.get(`https://api.github.com/users/tetondan`) //I have no followers so I used a user from the given list
 .then(response => {
-  cards.after(cardMaker(response.data));
-  axios.get(response.data.followers_url)
-  .then(url => {
-    url.data.forEach(user => {
-      axios.get(`https://api.github.com/users/${user.login}`)
+  cards.append(cardMaker(response.data)); //added 'parent' users card
+  axios.get(response.data.followers_url) //axios.get promise to get parents followers array
+  .then(bigObj => {
+    bigObj.data.forEach(user => { //array for followers was in another data property then I iterated over the array
+      axios.get(`https://api.github.com/users/${user.login}`) //user objects contain only a few properties so I called an axios.get with each user.login to get a complete user object
       .then(response => {
-        cards.after(cardMaker(response.data));
+        cards.after(cardMaker(response.data)); //appended each users card with complete info
       });
     });
   });
@@ -110,7 +109,7 @@ const cardMaker = obj => {
   cardInfo.appendChild(userName);
   cardInfo.appendChild(location);
   cardInfo.appendChild(profile);
-  profile.appendChild(link);
+  profile.appendChild(link);       //must be appended after profile html is added as to not overwrite html
   cardInfo.appendChild(followers);
   cardInfo.appendChild(following);
   cardInfo.appendChild(bio);
