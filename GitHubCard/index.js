@@ -12,10 +12,24 @@
     Skip to STEP 3.
 */
 
+
 /*
   STEP 4: Pass the data received from Github into your function,
     and append the returned markup to the DOM as a child of .cards
 */
+
+const cards = document.querySelector('.cards');
+
+axios.get('https://api.github.com/users/ryan4242') //api call
+.then(response => {                                //async response 
+  cards.appendChild(cardMaker(response.data));     //append card
+})
+.catch(() => {
+  const errorMessage = document.createElement('p');
+  errorMessage.textContent = 'Uh-oh! We hit a snag!';
+  cards.append(errorMessage);
+});
+  
 
 /*
   STEP 5: Now that you have your own card getting added to the DOM, either
@@ -29,6 +43,26 @@
 */
 
 const followersArray = [];
+
+axios.get(`https://api.github.com/users/tetondan`) //I have no followers so I used a user from the given list
+.then(response => {
+  cards.append(cardMaker(response.data)); //added 'parent' users card
+  axios.get(response.data.followers_url) //axios.get promise to get parents followers array
+  .then(bigObj => {
+    bigObj.data.forEach(user => { //array for followers was in another data property then I iterated over the array
+      axios.get(`https://api.github.com/users/${user.login}`) //user objects contain only a few properties so I called an axios.get with each user.login to get a complete user object
+      .then(response => {
+        cards.after(cardMaker(response.data)); //appended each users card with complete info
+      });
+    });
+  });
+})
+.catch(() => {
+  const errorMessage = document.createElement('p');
+  errorMessage.textContent = 'Uh-oh! We hit a snag!';
+  cards.append(errorMessage);
+});
+
 
 /*
   STEP 3: Create a function that accepts a single object as its only argument.
@@ -50,11 +84,45 @@ const followersArray = [];
     </div>
 */
 
-/*
-  List of LS Instructors Github username's:
-    tetondan
-    dustinmyers
-    justsml
-    luishrd
-    bigknell
-*/
+const cardMaker = obj => {
+  const card = document.createElement('div');
+  const image = document.createElement('img');
+  const cardInfo = document.createElement('div');
+  const name = document.createElement('h3');
+  const userName = document.createElement('p');
+  const location = document.createElement('p');
+  const profile = document.createElement('p');
+  const link = document.createElement('a');
+  const followers = document.createElement('p');
+  const following = document.createElement('p');
+  const bio = document.createElement('p');
+
+  card.classList.add('card');
+  cardInfo.classList.add('card-info');
+  name.classList.add('name');
+  userName.classList.add('username');
+
+  image.src = obj.avatar_url;
+  name.innerHTML = obj.name;
+  userName.innerHTML = obj.login;
+  location.innerHTML = `Location: ${obj.location}`;
+  link.href = obj.html_url;
+  link.textContent = obj.html_url;
+  profile.textContent = `Profile: `;
+  followers.innerHTML = `Followers: ${obj.followers}`;
+  following.innerHTML = `Following: ${obj.following}`;
+  bio.innerHTML = `Bio: ${obj.bio}`;
+
+  card.appendChild(image);
+  card.appendChild(cardInfo);
+  cardInfo.appendChild(name);
+  cardInfo.appendChild(userName);
+  cardInfo.appendChild(location);
+  cardInfo.appendChild(profile);
+  profile.appendChild(link);       //must be appended after profile html is added as to not overwrite html
+  cardInfo.appendChild(followers);
+  cardInfo.appendChild(following);
+  cardInfo.appendChild(bio);
+
+  return card;
+}
